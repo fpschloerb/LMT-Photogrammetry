@@ -1,4 +1,4 @@
-"""Module with m1_photo class for solving photogrammetry cloud for m1
+For """Module with m1_photo class for solving photogrammetry cloud for m1
 
 Classes: m1_photo
 Uses:    math,numpy
@@ -498,17 +498,35 @@ class m1_photo():
         elif self.model_type == 'ZERNIKE':
             rho = math.sqrt(self.XVec[i,0]**2 + self.XVec[i,1]**2)/25000.
             theta = math.atan2(self.XVec[i,1],self.XVec[i,0])
-            F[0] = 1.                                                # Piston
-            F[1] = 2.*rho*math.cos(theta)                            # Tip (X)
-            F[2] = 2.*rho*math.sin(theta)                            # Tilt (Y)
-            F[3] = math.sqrt(3.)*(2.*rho**2-1.)                      # Defocus
-            F[4] = math.sqrt(6.)*rho**2*math.sin(2.*theta)           # Oblique Astigmatism
-            F[5] = math.sqrt(6.)*rho**2*math.cos(2.*theta)           # Vertical Astigmatism
-            F[6] = math.sqrt(8.)*(3.*rho**3-2.*rho)*math.sin(theta)  # Vertical Coma
-            F[7] = math.sqrt(8.)*(3.*rho**3-2.*rho)*math.cos(theta)  # Horizontal Coma
-            F[8] = math.sqrt(8.)*rho**3*math.sin(3.*theta)           # Vertical Trefoil
-            F[9] = math.sqrt(8.)*rho**3*math.cos(3.*theta)           # Horizontal Trefoil
-            F[10] = math.sqrt(5.)*(6.*rho**4-6.*rho**2+1.)           # Primary Spherical
+            F[0] = 1.                                                # Piston               [0,  0]
+            F[1] = 2.*rho*math.cos(theta)                            # Tip (X)              [1, +1]
+            F[2] = 2.*rho*math.sin(theta)                            # Tilt (Y)             [1, -1]
+            F[3] = math.sqrt(3.)*(2.*rho**2-1.)                      # Defocus              [2,  0]
+            F[4] = math.sqrt(6.)*rho**2*math.cos(2.*theta)           # Vertical Astigmatism [2, +2]
+            F[5] = math.sqrt(6.)*rho**2*math.sin(2.*theta)           # Oblique Astigmatism  [2, -2]
+            F[6] = math.sqrt(8.)*(3.*rho**3-2.*rho)*math.cos(theta)  # Horizontal Coma      [3, +1]
+            F[7] = math.sqrt(8.)*(3.*rho**3-2.*rho)*math.sin(theta)  # Vertical Coma        [3, -1]
+            F[8] = math.sqrt(5.)*(6.*rho**4-6.*rho**2+1.)            # Primary Spherical    [4,  0]
+            F[9] = math.sqrt(8.)*rho**3*math.cos(3.*theta)           # Oblique Trefoil     [3, +3]
+            F[10] = math.sqrt(8.)*rho**3*math.sin(3.*theta)          # Vertical Trefoil    [3, -3]
+            F[11] = math.sqrt(10.)*(4.*rho**4-3.*rho**2)*math.cos(2.*theta) # Vertical secondary astigmatism [4, +2]
+            F[12] = math.sqrt(10.)*(4.*rho**4-3.*rho**2)*math.sin(2.*theta) # Oblique secondary  astigmatism [4, -2]
+            F[13] = math.sqrt(10.)*rho**4*math.cos(4.*theta)         # Vertical Quadrafoil  [4, +4]
+            F[14] = math.sqrt(10.)*rho**4*math.sin(4.*theta)         # Oblique Quadrafoil   [4, -4]
+            F[15] = math.sqrt(12.)*(10.*rho**5-12.*rho**3+3.*rho)*math.cos(theta) #         [5, +1]
+            F[16] = math.sqrt(12.)*(10.*rho**5-12.*rho**3+3.*rho)*math.sin(theta) #         [5, -1]
+            F[17] = math.sqrt(12.)*(5.*rho**5-4.*rho**3)*math.cos(3.*theta)       #         [5, +3]
+            F[18] = math.sqrt(12.)*(5.*rho**5-4.*rho**3)*math.sin(3.*theta)       #         [5, -3]
+            F[19] = math.sqrt(12.)*rho**5*math.cos(5.*theta)                      #         [5, +5]
+            F[20] = math.sqrt(12.)*rho**5*math.sin(5.*theta)                      #         [5, -5]
+            F[21] = math.sqrt(7.)*(20.*rho**6-30.*rho**4+12.*rho**2-1.0)          #         [6,  0]
+            F[22] = math.sqrt(14.)*(15.*rho**6-20.*rho**4+6.*rho**2)*math.cos(2.*theta) #   [6, +2]
+            F[23] = math.sqrt(14.)*(15.*rho**6-20.*rho**4+6.*rho**2)*math.sin(2.*theta) #   [6, -2]
+            F[24] = math.sqrt(14.)*(6.*rho**6-5.*rho**4)*math.cos(4.*theta)       #         [6, +4]
+            F[25] = math.sqrt(14.)*(6.*rho**6-5.*rho**4)*math.sin(4.*theta)       #         [6, -4]
+            F[26] = math.sqrt(14.)*rho**6*math.cos(6.*theta)                      #         [6, +6]
+            F[27] = math.sqrt(14.)*rho**6*math.sin(6.*theta)                      #         [6, +6]
+
         elif self.model_type == 'TILT':
             F[0] = 1.
             F[1] = self.XVec[i,0]
@@ -517,7 +535,7 @@ class m1_photo():
             print('MODEL TYPE ERROR')
         
     def fit_cloud(self,fit_rings=[1,2,3]):
-        F = np.zeros(11)  # largest number of parameters
+        F = np.zeros(28)  # largest number of parameters
         
         # select observations according to ring number 
         # (specify outermost ring above)
@@ -615,7 +633,7 @@ class m1_photo():
 
     def make_residuals_vector(self,res_rings=[1,2,3]):
         """ create residuals vectors after model fit """
-        F = np.zeros(11)  # largest number of parameters
+        F = np.zeros(28)  # largest number of parameters
 
         # select observations according to ring number 
         # (specify outermost ring above)
